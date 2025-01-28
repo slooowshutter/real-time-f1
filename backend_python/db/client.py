@@ -30,9 +30,17 @@ class QuestDBClient:
                                 if 'T' in v and ('+' in v or 'Z' in v or '-' in v):
                                     columns[k] = datetime.datetime.fromisoformat(v.replace('Z', '+00:00'))
                                 else:
-                                    symbols[k] = v
+                                    # Try to convert string to float
+                                    try:
+                                        columns[k] = float(v)
+                                    except ValueError:
+                                        symbols[k] = v
                             except ValueError:
-                                symbols[k] = v
+                                # Try to convert string to float if datetime parse fails
+                                try:
+                                    columns[k] = float(v)
+                                except ValueError:
+                                    symbols[k] = v
                         elif isinstance(v, (int, float)):
                             columns[k] = v
                         elif isinstance(v, (datetime.datetime, datetime.date)):

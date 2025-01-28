@@ -180,7 +180,7 @@ CREATE TABLE weather (
     timestamp TIMESTAMP,
     air_temperature DOUBLE,
     date TIMESTAMP,
-    humidity INT,
+    humidity DOUBLE,
     meeting_key INT,
     pressure DOUBLE,
     rainfall INT,
@@ -189,3 +189,14 @@ CREATE TABLE weather (
     wind_direction INT,
     wind_speed DOUBLE
 ) timestamp(timestamp) partition by DAY;
+
+-- Fetch progress table with both keys
+CREATE TABLE fetch_progress (
+    endpoint STRING,
+    meeting_key INT,
+    session_key INT,
+    chunk_start TIMESTAMP,
+    chunk_end TIMESTAMP,
+    status STRING,
+    created_at TIMESTAMP
+) TIMESTAMP(created_at) partition by DAY;

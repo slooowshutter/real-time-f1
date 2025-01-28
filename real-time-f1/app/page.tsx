@@ -1,23 +1,51 @@
-'use client'
+'use server'
 
-import Image from "next/image";
-import useSWR from 'swr'
 
-const fetcher = (url: string) => fetch(url).then(res => res.json())
-
-export default function Home() {
-    const { data, error } = useSWR('/api?table=car_data', fetcher, {
-        refreshInterval: 1
-    })
-
-    if (error) return <div>Failed to load</div>
-    if (!data) return <div>Loading...</div>
-
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { Separator } from "@/components/ui/separator"
+import {
+    SidebarInset,
+    SidebarProvider,
+    SidebarTrigger,
+} from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
+import HomePage from "@/components/home/home-page"
+export default async function Page() {
     return (
-        <div>
-            <h1>Real-Time F1</h1>
-            <pre>{JSON.stringify(data, null, 2)}</pre>
-            <p>{error}</p>
-        </div>
-    );
+        <main>
+            <header className="bg-muted p-2 flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+                <div className="bg-background w-full h-full flex items-center gap-2 p-4 rounded-lg">
+                    <SidebarTrigger className="-ml-1" />
+                    <Separator orientation="vertical" className="mr-2 h-4" />
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem className="hidden md:block">
+                                <BreadcrumbLink href="/2024">
+                                    2024
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator className="hidden md:block" />
+                            <BreadcrumbItem>    
+                                <BreadcrumbLink>Brazil</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator className="hidden md:block" />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink>Race</BreadcrumbLink>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                </div>
+            </header>
+            <div className="">
+                <HomePage />
+            </div>
+        </main>
+    )
 }

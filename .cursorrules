@@ -1,0 +1,25 @@
+Project details: 
+
+
+THINGS TO ABSOLUTELY FOLLOW: 
+- Every date should be always converted to UTC
+- Always use the variables in global.css: 
+    -background
+    -foreground
+    -card
+    -card-foreground
+    -popover
+    -popover-foreground
+    -primary
+    -primary-foreground
+    -secondary
+    -secondary-foreground
+    -muted
+    -muted-foreground
+    -accent
+    -accent-foreground
+    -destructive
+    -destructive-foreground
+    -border
+    -input
+    -ring
