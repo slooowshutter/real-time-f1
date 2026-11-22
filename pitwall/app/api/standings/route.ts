@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server'
-import { api, type Session } from '@/lib/openf1'
+import { api, seasonParam, type Session } from '@/lib/openf1'
 import { redis, sessionsOf } from '@/lib/redis'
 import type { Standings } from '@/lib/standings'
 
@@ -25,7 +25,8 @@ type Driver = {
 }
 
 export async function GET(req: NextRequest) {
-  const year = Number(req.nextUrl.searchParams.get('year')) || new Date().getUTCFullYear()
+  const year = seasonParam(req.nextUrl.searchParams.get('year'))
+  if (year == null) return new Response('year must be a season from 2023 to now', { status: 400 })
   try {
     return Response.json(await standingsOf(year))
   } catch (e) {

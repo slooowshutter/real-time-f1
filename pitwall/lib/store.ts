@@ -243,7 +243,7 @@ export class Store {
   /** Past sessions: transcribe the radio the worker never heard (it does live ones itself).
    *  Transcripts come back through pub/sub like any live batch. */
   transcribe() {
-    if (!this.live && this.radio.some((r) => !this.transcripts.has(r.recording_url))) transcribe(this).catch((e) => console.error('transcribe', e.message))
+    if (!this.live && this.radio.some((r) => !this.transcripts.has(r.recording_url))) transcribe(this, true).catch((e) => console.error('transcribe', e.message))
   }
 
   /** Past session missing from Redis: pull it from OpenF1 REST, small topics first so the UI fills in progressively. */
@@ -288,12 +288,14 @@ export class Store {
   }
 }
 
-// Registry: one Store per session per process, idle ones evicted beyond KEEP.
+// Registry: one Store per session per process, idle ones evicted beyond KEEP, never more than MAX.
 const KEEP = 3
+const MAX = 6 // ponytail: a race with telemetry holds a few hundred MB; per-client stream limits if this goes public
 const g = globalThis as unknown as { stores?: Map<number, Store>; listening?: boolean }
 const stores = (g.stores ??= new Map<number, Store>())
 
-export function openStore(sk: number) {
+/** Null when MAX sessions are open and all are being watched. */
+export function openStore(sk: number): Store | null {
   if (!g.listening) {
     g.listening = true
     subscriber().on('message', (ch: string, msg: string) => {
@@ -305,6 +307,7 @@ export function openStore(sk: number) {
   if (s) {
     s.ready.then(() => s!.backfill()).catch(() => {})
   } else {
+    if (stores.size >= MAX && ![...stores.values()].some((o) => o.users === 0)) return null
     s = new Store(sk)
     const fresh = s
     s.ready = s.load().catch((e) => {

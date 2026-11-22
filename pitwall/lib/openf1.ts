@@ -25,6 +25,14 @@ export type Session = {
   is_cancelled?: boolean
 }
 
+/** `?year=` as a season OpenF1 has (2023 on), the current one when absent, null when invalid.
+ *  Bounded so a request can't mint a cache key and an OpenF1 call per arbitrary number. */
+export function seasonParam(q: string | null): number | null {
+  const now = new Date().getUTCFullYear()
+  const year = q == null ? now : Number(q)
+  return Number.isInteger(year) && year >= 2023 && year <= now ? year : null
+}
+
 const BASE = 'https://api.openf1.org'
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 

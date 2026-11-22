@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
   if (delay !== undefined) rate = 1
 
   const store = openStore(sk)
+  if (!store) return new Response('Too many sessions open at once, try again in a minute', { status: 503 })
   const enc = new TextEncoder()
   let stop = () => {}
 

@@ -150,8 +150,18 @@ async function understand(s: Store, c: Radio): Promise<Turn[]> {
   }
 }
 
-/** Transcribe the session's radio that has no transcript yet, newest first (those are on screen). */
-export async function transcribe(s: Store) {
+// ponytail: a flat daily cap (~$6) on clips transcribed because someone opened a past session, so walking
+// through every session can't run up the bill; the worker's live clips don't count. Per-user quotas if this goes public.
+const DAILY = 300
+async function withinBudget() {
+  const k = `f1:radio:day:${new Date().toISOString().slice(0, 10)}`
+  const [[, n]] = (await redis.multi().incr(k).expire(k, 2 * 86400).exec()) as [[unknown, number]]
+  return n <= DAILY
+}
+
+/** Transcribe the session's radio that has no transcript yet, newest first (those are on screen).
+ *  capped: opened by a viewer rather than heard live, so it counts against the daily budget. */
+export async function transcribe(s: Store, capped = false) {
   if (!EARS.some((e) => env[e.key])) return
   await s.ready
   const done = new Set(await redis.hkeys(key(s.sk, 'radio_turns')))
@@ -161,6 +171,7 @@ export async function transcribe(s: Store) {
   await Promise.all([0, 1].map(async () => {
     for (let c; (c = todo.shift()); ) {
       try {
+        if (capped && !(await withinBudget())) continue // tried again tomorrow
         const turns = await understand(s, c)
         await redis.pipeline().hset(key(s.sk, 'radio_turns'), c.recording_url, JSON.stringify(turns))
           .publish(channel(s.sk), JSON.stringify({ at: 0, src: 0, d: [], radio: [[c.recording_url, turns]] })).exec()

@@ -6,6 +6,7 @@ import { api, type Session } from './openf1'
 //   f1:<sk>:<topic>      LIST of chunks, each chunk = newline-joined packed events (append-only log)
 //   f1:<sk>:info         session JSON
 //   f1:<sk>:radio_turns  HASH recording_url → transcript turns (JSON)
+//   f1:radio:day:<date>  clips transcribed for past sessions that day (capped, 2 days)
 //   f1:sessions:<year>   { at, sessions } picker cache
 //   channel f1:<sk>      live batches { at, src, d: [topic, lines[]][] }
 

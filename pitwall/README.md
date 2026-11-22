@@ -36,6 +36,7 @@ Both processes need a long-lived Node host (Railway, Fly.io, a VPS): `pnpm build
 | --- | --- |
 | `f1:<session>:<topic>` | List of chunks, newline-joined events (append-only log) |
 | `f1:<session>:info` | Session and meeting names |
+| `f1:radio:day:<date>` | Past-session clips transcribed that day, capped at 300 so browsing can't run up the bill (2 days) |
 | `f1:<session>:radio_turns` | Team radio transcripts: recording URL → `[{ speaker, text }]` (`[]` = no speech) |
 | `f1:sessions:<year>` | Session picker cache (1 h) |
 | `f1:standings:<year>` | Championship totals after every race and sprint (10 min, kept for good once the season is over) |

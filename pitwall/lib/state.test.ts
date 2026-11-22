@@ -1,6 +1,7 @@
 // pnpm test: stateAt never reveals what hasn't happened yet at t.
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
+import { seasonParam } from './openf1'
 import { situation } from './radio'
 import { stateAt } from './state'
 import { Store } from './store'
@@ -156,4 +157,10 @@ test('radio situation: what Gemini is told is what was known when the clip was s
   assert.match(text, /SAFETY CAR DEPLOYED/)
   assert.doesNotMatch(text, /TRACK CLEAR/) // sent 5 s later
   assert.match(text, /driver: Tyres are gone\./)
+})
+
+test('season param: current year by default, 2023 to now only', () => {
+  const now = new Date().getUTCFullYear()
+  assert.deepEqual([seasonParam(null), seasonParam('2023'), seasonParam(String(now))], [now, 2023, now])
+  for (const bad of ['2022', String(now + 1), '2024.5', 'abc', '', '1e9']) assert.equal(seasonParam(bad), null, bad)
 })
