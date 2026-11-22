@@ -1,0 +1,162 @@
+@import "tailwindcss";
+
+/* Pit wall: a rack of screens. The wall is the gap between panels; colour only ever carries race meaning. */
+@theme inline {
+  --color-wall: #0a0c0f;
+  --color-screen: #15191e;
+  --color-raised: #1d2229;
+  --color-rule: #272e36;
+  --color-chalk: #e8ebee;
+  --color-fog: #8b949e;
+  --color-dim: #5b636d;
+
+  /* timing convention */
+  --color-overall: #b26bff;
+  --color-personal: #2fd27a;
+  --color-standard: #f2c94c;
+
+  /* Pirelli compounds */
+  --color-soft: #e8382f;
+  --color-medium: #f2c94c;
+  --color-hard: #edede6;
+  --color-inter: #39b54a;
+  --color-wet: #2e7fe0;
+
+  /* track status */
+  --color-flag-green: #2fd27a;
+  --color-flag-yellow: #f2c94c;
+  --color-flag-sc: #ff9f1a;
+  --color-flag-red: #ff3b30;
+  --color-live: #e10600;
+
+  --font-sans: var(--font-saira);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-wall);
+  color: var(--color-chalk);
+  font-family: var(--font-saira), system-ui, sans-serif;
+  font-variation-settings: "wdth" 100;
+}
+
+/* Width is the voice: wide for the event, condensed where 20 cars must fit. */
+.wide {
+  font-variation-settings: "wdth" 125;
+}
+.narrow {
+  font-variation-settings: "wdth" 82;
+}
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-chalk);
+  outline-offset: 2px;
+}
+
+/* Native range input styled as the replay bar. */
+.scrub {
+  appearance: none;
+  background: transparent;
+  height: 28px;
+  cursor: pointer;
+}
+.scrub::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(to right, var(--color-chalk) var(--p), var(--color-rule) var(--p));
+}
+.scrub::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(to right, var(--color-chalk) var(--p), var(--color-rule) var(--p));
+}
+.scrub::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: var(--color-chalk);
+  border: 3px solid var(--color-screen);
+}
+.scrub::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-chalk);
+  border: 3px solid var(--color-screen);
+}
+
+/* Cars glide between server frames; an overtake briefly lights its row. */
+/* Server frames arrive every 100 ms; tweening over the same interval gives constant speed. */
+.car {
+  transition: transform 110ms linear;
+}
+.meter {
+  transition: width 110ms linear;
+}
+@keyframes gained {
+  from,
+  25% {
+    background-color: color-mix(in srgb, var(--color-personal) 24%, transparent);
+  }
+}
+@keyframes gained-again {
+  from,
+  25% {
+    background-color: color-mix(in srgb, var(--color-personal) 24%, transparent);
+  }
+}
+@keyframes lost {
+  from,
+  25% {
+    background-color: color-mix(in srgb, var(--color-soft) 20%, transparent);
+  }
+}
+@keyframes lost-again {
+  from,
+  25% {
+    background-color: color-mix(in srgb, var(--color-soft) 20%, transparent);
+  }
+}
+/* Held for the first second, then fades out over three. */
+.gained {
+  animation: gained 4s ease-out;
+}
+.gained-again {
+  animation: gained-again 4s ease-out;
+}
+.lost {
+  animation: lost 4s ease-out;
+}
+.lost-again {
+  animation: lost-again 4s ease-out;
+}
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+.pulse {
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .car,
+  .meter {
+    transition: none;
+  }
+  .gained,
+  .gained-again,
+  .lost,
+  .lost-again,
+  .pulse {
+    animation: none;
+  }
+}
